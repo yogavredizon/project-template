@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  jaeger:
+    image: docker.io/jaegertracing/all-in-one:latest
+    container_name: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686" # Web UI Jaeger
+      - "4317:4317"   # Port OTLP gRPC (Go)
+      - "4318:4318"   # Port OTLP HTTP
+    restart: always
