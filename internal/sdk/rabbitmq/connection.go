@@ -17,7 +17,7 @@ const (
 )
 
 type Connection struct {
-	cfg  conf.Config
+	cfg  *conf.Config
 	mu   sync.RWMutex
 	conn *amqp.Connection
 
@@ -30,7 +30,7 @@ type Connection struct {
 	once   sync.Once
 }
 
-func NewConnection(cfg conf.Config) *Connection {
+func NewConnection(cfg *conf.Config) *Connection {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	if cfg.RabbitMQ.MaxAttempts <= 0 {

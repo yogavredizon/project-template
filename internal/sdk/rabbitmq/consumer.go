@@ -10,7 +10,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Handler func(ctx context.Context, msg amqp.Delivery) error
+type Handler func(ctx context.Context, msg Delivery) error
 
 type ConsumerConfig struct {
 	QueueName   string
@@ -134,7 +134,7 @@ func (c *Consumer) worker(ch <-chan amqp.Delivery) {
 }
 
 func (c *Consumer) dispatch(delivery amqp.Delivery) {
-	if err := c.handler(context.Background(), delivery); err != nil {
+	if err := c.handler(context.Background(), Delivery{Body: delivery.Body, ContentType: delivery.ContentType}); err != nil {
 		if !c.cfg.Retriable {
 			if err := delivery.Reject(false); err != nil {
 				log.Printf("failed to acknowledge message. error: %v", err)
@@ -196,7 +196,7 @@ func (c *Consumer) retryBackoff(ctx context.Context, delivery amqp.Delivery) err
 			Exchange:   exchange,
 			RoutingKey: routingKey,
 			Headers:    headers,
-			Body:       Delivery{body: delivery.Body, contentType: delivery.ContentType},
+			Body:       Delivery{Body: delivery.Body, ContentType: delivery.ContentType},
 		},
 	); err != nil {
 		return delivery.Nack(false, true)

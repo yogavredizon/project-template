@@ -13,7 +13,7 @@ import (
 
 type Publisher struct {
 	conn *Connection
-	cfg  conf.Config
+	cfg  *conf.Config
 	pool chan *amqp.Channel
 	mu   sync.Mutex
 }

@@ -1,1 +1,86 @@
 package bootstrap
+
+import (
+	"context"
+	"errors"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/yogavredizon/log-analyzer/internal/conf"
+	"github.com/yogavredizon/log-analyzer/internal/middleware"
+	"github.com/yogavredizon/log-analyzer/internal/module/activity"
+	router "github.com/yogavredizon/log-analyzer/internal/route"
+	"github.com/yogavredizon/log-analyzer/internal/sdk/rabbitmq"
+	"github.com/yogavredizon/log-analyzer/pkg/logger"
+	"github.com/yogavredizon/log-analyzer/pkg/otel"
+	"github.com/yogavredizon/log-analyzer/pkg/web"
+)
+
+type Application struct {
+	server        *http.Server
+	rabbitConn    *rabbitmq.Connection
+	traceShutdown func(ctx context.Context)
+}
+
+func NewApplication(cfg *conf.Config) (*Application, error) {
+	otelCfg := otel.Config{
+		Host:        cfg.OtelHost,
+		ServiceName: cfg.AppName,
+		Probability: 1.0,
+	}
+
+	tp, shutdownTracing, err := otel.InitTracing(&otelCfg)
+	if err != nil {
+		return nil, err
+	}
+
+	log := logger.New(os.Stdout, logger.LevelDebug, "main", func(context.Context) string {
+		return uuid.New().String()
+	})
+
+	middlewares := []web.MidFun{
+		middleware.Logger(log), middleware.Error(log),
+	}
+
+	app := web.NewApp(log.Info, tp.Tracer(cfg.AppName), middlewares...)
+	app.EnableOrigin([]string{"*"})
+
+	rabbitConn := rabbitmq.NewConnection(cfg)
+	publisher, err := rabbitmq.NewPublisher(rabbitConn)
+	if err != nil {
+		rabbitConn.Shutdown()
+		shutdownTracing(context.Background())
+		return nil, err
+	}
+
+	activityModule := activity.NewModule(publisher)
+	router.New(app, activityModule)
+
+	return &Application{
+		server: &http.Server{
+			Addr:         ":8888",
+			Handler:      app,
+			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 10 * time.Second,
+		},
+		rabbitConn:    rabbitConn,
+		traceShutdown: shutdownTracing,
+	}, nil
+}
+
+func (a *Application) Start() error {
+	err := a.server.ListenAndServe()
+	if errors.Is(err, http.ErrServerClosed) {
+		return nil
+	}
+	return err
+}
+
+func (a *Application) Shutdown(ctx context.Context) error {
+	err := a.server.Shutdown(ctx)
+	a.rabbitConn.Shutdown()
+	a.traceShutdown(ctx)
+	return err
+}

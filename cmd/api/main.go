@@ -2,58 +2,50 @@ package main
 
 import (
 	"context"
-	"net/http"
+	"errors"
+	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/google/uuid"
-	"github.com/yogavredizon/log-analyzer/internal/middleware"
-	"github.com/yogavredizon/log-analyzer/pkg/errs"
-	"github.com/yogavredizon/log-analyzer/pkg/logger"
-	"github.com/yogavredizon/log-analyzer/pkg/otel"
-	"github.com/yogavredizon/log-analyzer/pkg/web"
+	"github.com/yogavredizon/log-analyzer/internal/bootstrap"
+	"github.com/yogavredizon/log-analyzer/internal/conf"
 )
 
 func main() {
-	cfg := otel.Config{
-		Host:        "172.17.151.164:4317",
-		ServiceName: "infolelang",
-		Probability: 1.0,
-	}
-
-	tp, shutdown, err := otel.InitTracing(&cfg)
-	if err != nil {
-		panic(err)
-	}
-
-	defer shutdown(context.Background())
-
-	var log *logger.Logger = logger.New(os.Stdout, logger.LevelDebug, "main", func(ctx context.Context) string {
-		return uuid.New().String()
-	})
-
-	middlewares := []web.MidFun{
-		middleware.Logger(log), middleware.Error(log),
-	}
-
-	app := web.NewApp(log.Info, tp.Tracer(cfg.ServiceName), middlewares...)
-
-	app.EnableOrigin([]string{"*"})
-
-	app.HandlerFunc(http.MethodGet, "", "/healthz", health, nil)
-
-	api := http.Server{
-		Addr:         ":8888",
-		Handler:      app,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
-
-	if err := api.ListenAndServe(); err != nil {
-		panic(err)
+	if err := run(); err != nil {
+		log.Fatal(err)
 	}
 }
 
-func health(ctx context.Context, r *http.Request) web.Encoder {
-	return errs.New(errs.ValidationError, "Ini error request")
+func run() error {
+	cfg, err := conf.New()
+	if err != nil {
+		return err
+	}
+
+	app, err := bootstrap.NewApplication(cfg)
+	if err != nil {
+		return err
+	}
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	startErr := make(chan error, 1)
+	go func() {
+		startErr <- app.Start()
+	}()
+
+	var runErr error
+	select {
+	case <-ctx.Done():
+	case runErr = <-startErr:
+	}
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	return errors.Join(runErr, app.Shutdown(shutdownCtx))
 }

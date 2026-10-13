@@ -13,10 +13,10 @@ type Message struct {
 }
 
 type Delivery struct {
-	body        []byte
-	contentType string
+	Body        []byte
+	ContentType string
 }
 
 func (d Delivery) Encode() ([]byte, string, error) {
-	return d.body, d.contentType, nil
+	return d.Body, d.ContentType, nil
 }
