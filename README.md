@@ -2,7 +2,10 @@
 
 A small Go HTTP service template with:
 - CLI entrypoints in `cmd/`
-- application wiring in `internal/`
+- application wiring in `internal/app/`
+- configuration in `internal/config/`
+- HTTP middleware and routing in `internal/http/`
+- feature modules in `internal/module/`
 - reusable packages in `pkg/`
 - RabbitMQ publishing integration
 - OpenTelemetry tracing
@@ -16,22 +19,23 @@ A small Go HTTP service template with:
 │   └── api/
 │       └── main.go
 ├── internal/
-│   ├── bootstrap/
-│   │   └── bootstrap.go
-│   ├── conf/
-│   │   └── conf.go
-│   ├── middleware/
-│   │   ├── errors.go
-│   │   ├── helper.go
-│   │   └── logger.go
+│   ├── app/
+│   │   └── app.go
+│   ├── config/
+│   │   └── config.go
+│   ├── http/
+│   │   ├── middleware/
+│   │   │   ├── errors.go
+│   │   │   ├── helper.go
+│   │   │   └── logger.go
+│   │   └── router/
+│   │       └── router.go
 │   ├── module/
 │   │   └── activity/
 │   │       ├── activity.go
 │   │       ├── dto/
 │   │       ├── handler/
 │   │       └── service/
-│   ├── route/
-│   │   └── route.go
 │   └── sdk/
 │       └── rabbitmq/
 │           ├── connection.go
@@ -59,7 +63,8 @@ A small Go HTTP service template with:
 ├── Makefile
 ├── go.mod
 ├── go.sum
-└── README.md
+├── README.md
+└── .env.example
 ```
 
 ## Run the app

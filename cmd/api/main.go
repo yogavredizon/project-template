@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yogavredizon/project-template/internal/bootstrap"
-	"github.com/yogavredizon/project-template/internal/conf"
+	"github.com/yogavredizon/project-template/internal/app"
+	"github.com/yogavredizon/project-template/internal/config"
 )
 
 func main() {
@@ -20,12 +20,12 @@ func main() {
 }
 
 func run() error {
-	cfg, err := conf.New()
+	cfg, err := config.New()
 	if err != nil {
 		return err
 	}
 
-	app, err := bootstrap.NewApplication(cfg)
+	application, err := app.NewApplication(cfg)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func run() error {
 
 	startErr := make(chan error, 1)
 	go func() {
-		startErr <- app.Start()
+		startErr <- application.Start()
 	}()
 
 	var runErr error
@@ -47,5 +47,5 @@ func run() error {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	return errors.Join(runErr, app.Shutdown(shutdownCtx))
+	return errors.Join(runErr, application.Shutdown(shutdownCtx))
 }
