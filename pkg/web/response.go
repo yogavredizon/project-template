@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/yogavredizon/log-analyzer/pkg/errs"
-	"github.com/yogavredizon/log-analyzer/pkg/otel"
+	"github.com/yogavredizon/project-template/pkg/errs"
+	"github.com/yogavredizon/project-template/pkg/otel"
 	"go.opentelemetry.io/otel/attribute"
 )
 

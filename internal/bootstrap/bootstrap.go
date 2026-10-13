@@ -8,14 +8,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yogavredizon/log-analyzer/internal/conf"
-	"github.com/yogavredizon/log-analyzer/internal/middleware"
-	"github.com/yogavredizon/log-analyzer/internal/module/activity"
-	router "github.com/yogavredizon/log-analyzer/internal/route"
-	"github.com/yogavredizon/log-analyzer/internal/sdk/rabbitmq"
-	"github.com/yogavredizon/log-analyzer/pkg/logger"
-	"github.com/yogavredizon/log-analyzer/pkg/otel"
-	"github.com/yogavredizon/log-analyzer/pkg/web"
+	"github.com/yogavredizon/project-template/internal/conf"
+	"github.com/yogavredizon/project-template/internal/middleware"
+	"github.com/yogavredizon/project-template/internal/module/activity"
+	router "github.com/yogavredizon/project-template/internal/route"
+	"github.com/yogavredizon/project-template/internal/sdk/rabbitmq"
+	"github.com/yogavredizon/project-template/pkg/logger"
+	"github.com/yogavredizon/project-template/pkg/otel"
+	"github.com/yogavredizon/project-template/pkg/web"
 )
 
 type Application struct {

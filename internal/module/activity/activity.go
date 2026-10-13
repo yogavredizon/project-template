@@ -3,10 +3,10 @@ package activity
 import (
 	"net/http"
 
-	"github.com/yogavredizon/log-analyzer/internal/module/activity/handler"
-	"github.com/yogavredizon/log-analyzer/internal/module/activity/service"
-	"github.com/yogavredizon/log-analyzer/internal/sdk/rabbitmq"
-	"github.com/yogavredizon/log-analyzer/pkg/web"
+	"github.com/yogavredizon/project-template/internal/module/activity/handler"
+	"github.com/yogavredizon/project-template/internal/module/activity/service"
+	"github.com/yogavredizon/project-template/internal/sdk/rabbitmq"
+	"github.com/yogavredizon/project-template/pkg/web"
 )
 
 type Module struct {

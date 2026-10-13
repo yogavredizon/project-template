@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/yogavredizon/log-analyzer/internal/module/activity/dto"
-	"github.com/yogavredizon/log-analyzer/internal/sdk/rabbitmq"
+	"github.com/yogavredizon/project-template/internal/module/activity/dto"
+	"github.com/yogavredizon/project-template/internal/sdk/rabbitmq"
 )
 
 type Activity struct {

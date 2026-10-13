@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/yogavredizon/log-analyzer/pkg/errs"
-	"github.com/yogavredizon/log-analyzer/pkg/logger"
-	"github.com/yogavredizon/log-analyzer/pkg/web"
+	"github.com/yogavredizon/project-template/pkg/errs"
+	"github.com/yogavredizon/project-template/pkg/logger"
+	"github.com/yogavredizon/project-template/pkg/web"
 )
 
 func Error(log *logger.Logger) web.MidFun {

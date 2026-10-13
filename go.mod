@@ -1,4 +1,4 @@
-module github.com/yogavredizon/log-analyzer
+module github.com/yogavredizon/project-template
 
 go 1.26.8
 

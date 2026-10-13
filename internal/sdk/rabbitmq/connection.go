@@ -8,7 +8,7 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/yogavredizon/log-analyzer/internal/conf"
+	"github.com/yogavredizon/project-template/internal/conf"
 )
 
 const (

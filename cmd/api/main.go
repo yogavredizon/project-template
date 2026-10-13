@@ -9,8 +9,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yogavredizon/log-analyzer/internal/bootstrap"
-	"github.com/yogavredizon/log-analyzer/internal/conf"
+	"github.com/yogavredizon/project-template/internal/bootstrap"
+	"github.com/yogavredizon/project-template/internal/conf"
 )
 
 func main() {

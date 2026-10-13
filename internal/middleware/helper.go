@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/yogavredizon/log-analyzer/pkg/web"
+	"github.com/yogavredizon/project-template/pkg/web"
 )
 
 func checkIsError(e web.Encoder) error {

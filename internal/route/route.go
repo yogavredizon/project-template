@@ -1,6 +1,6 @@
 package router
 
-import "github.com/yogavredizon/log-analyzer/pkg/web"
+import "github.com/yogavredizon/project-template/pkg/web"
 
 type Router interface {
 	Route(app *web.App)

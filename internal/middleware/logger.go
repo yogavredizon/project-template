@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/yogavredizon/log-analyzer/pkg/logger"
-	"github.com/yogavredizon/log-analyzer/pkg/otel"
-	"github.com/yogavredizon/log-analyzer/pkg/web"
+	"github.com/yogavredizon/project-template/pkg/logger"
+	"github.com/yogavredizon/project-template/pkg/otel"
+	"github.com/yogavredizon/project-template/pkg/web"
 	"go.opentelemetry.io/otel/attribute"
 )
 

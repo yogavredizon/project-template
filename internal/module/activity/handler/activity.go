@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/yogavredizon/log-analyzer/internal/module/activity/dto"
-	"github.com/yogavredizon/log-analyzer/internal/module/activity/service"
-	"github.com/yogavredizon/log-analyzer/pkg/errs"
-	"github.com/yogavredizon/log-analyzer/pkg/web"
+	"github.com/yogavredizon/project-template/internal/module/activity/dto"
+	"github.com/yogavredizon/project-template/internal/module/activity/service"
+	"github.com/yogavredizon/project-template/pkg/errs"
+	"github.com/yogavredizon/project-template/pkg/web"
 )
 
 type ActivityHandler struct {
