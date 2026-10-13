@@ -8,12 +8,12 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/yogavredizon/log-analyzer/internal/conf"
+	"github.com/yogavredizon/log-analyzer/internal/config"
 )
 
 type Publisher struct {
 	conn *Connection
-	cfg  *conf.Config
+	cfg  *config.Config
 	pool chan *amqp.Channel
 	mu   sync.Mutex
 }

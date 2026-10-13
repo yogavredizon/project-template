@@ -1,4 +1,4 @@
-package conf
+package config
 
 import (
 	"fmt"
@@ -9,7 +9,9 @@ import (
 )
 
 type Config struct {
-	AppName  string `mapstructure:"APP_NAME"`
+	AppName string `mapstructure:"APP_NAME"`
+	AppPort string `mapstructure:"APP_PORT"`
+
 	OtelHost string `mapstructure:"OTEL_HOST"`
 
 	RabbitMQ struct {

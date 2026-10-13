@@ -8,7 +8,7 @@ import (
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"github.com/yogavredizon/log-analyzer/internal/conf"
+	"github.com/yogavredizon/log-analyzer/internal/config"
 )
 
 const (
@@ -17,7 +17,7 @@ const (
 )
 
 type Connection struct {
-	cfg  *conf.Config
+	cfg  *config.Config
 	mu   sync.RWMutex
 	conn *amqp.Connection
 
@@ -30,12 +30,8 @@ type Connection struct {
 	once   sync.Once
 }
 
-func NewConnection(cfg *conf.Config) *Connection {
+func NewConnection(cfg *config.Config) *Connection {
 	ctx, cancel := context.WithCancel(context.Background())
-
-	if cfg.RabbitMQ.MaxAttempts <= 0 {
-		cfg.RabbitMQ.MaxAttempts = maxReconnectAttempts
-	}
 
 	if cfg.RabbitMQ.ReconnectDelay <= 0 {
 		cfg.RabbitMQ.ReconnectDelay = maxReconnectDelay
@@ -113,6 +109,8 @@ func (c *Connection) notifySubsriber() {
 
 func (c *Connection) reconnectLoop() {
 	attempts := 0
+	connected := false
+
 	for {
 		select {
 		case <-c.ctx.Done():
@@ -120,7 +118,7 @@ func (c *Connection) reconnectLoop() {
 		default:
 		}
 
-		if c.cfg.RabbitMQ.MaxAttempts > 0 && attempts >= c.cfg.RabbitMQ.MaxAttempts {
+		if !connected && c.cfg.RabbitMQ.MaxAttempts > 0 && attempts >= c.cfg.RabbitMQ.MaxAttempts {
 			log.Printf("RabbitMQ max reconect attempt is reached. Attempt : %d", attempts)
 			c.cancel()
 			return
@@ -128,6 +126,8 @@ func (c *Connection) reconnectLoop() {
 
 		conn, err := amqp.Dial(c.cfg.RabbitMQ.URL)
 		if err != nil {
+			log.Printf("failed to dial rabbitmq. error: %v, reconnecting atempt : %d", err, attempts+1)
+
 			attempts++
 
 			delay := backoff(attempts, time.Duration(c.cfg.RabbitMQ.ReconnectDelay)*time.Second)
@@ -140,6 +140,7 @@ func (c *Connection) reconnectLoop() {
 		}
 
 		attempts = 0
+		connected = true
 
 		c.mu.Lock()
 		c.conn = conn

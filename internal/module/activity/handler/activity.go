@@ -27,7 +27,7 @@ func (a *ActivityHandler) Publish(ctx context.Context, r *http.Request) web.Enco
 	}
 
 	if err := a.service.Publish(ctx, req); err != nil {
-		return errs.New(errs.ValidationError, "invalid request")
+		return errs.New(errs.InternalServerError, err.Error())
 	}
 
 	return dto.Response{Status: "OK"}
